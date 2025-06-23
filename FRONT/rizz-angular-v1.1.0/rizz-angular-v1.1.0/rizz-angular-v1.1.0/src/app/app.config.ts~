@@ -1,0 +1,68 @@
+import { ApplicationConfig, APP_INITIALIZER, isDevMode, provideZoneChangeDetection } from '@angular/core';
+import { provideRouter, withInMemoryScrolling, type InMemoryScrollingFeature, type InMemoryScrollingOptions } from '@angular/router';
+import { provideStore } from '@ngrx/store';
+import { provideStoreDevtools } from '@ngrx/store-devtools';
+import { routes } from './app.routes';
+import { provideEffects } from '@ngrx/effects';
+import { rootReducer } from './store';
+import { DatePipe, DecimalPipe } from '@angular/common';
+import { AuthenticationEffects } from './store/authentication/authentication.effects';
+import { provideHttpClient, withFetch, withInterceptorsFromDi } from '@angular/common/http';
+import { FakeBackendProvider } from './core/helpers/fake-backend';
+import { CalendarEffects } from './store/calendar/calendar.effects';
+import { KanbanEffects } from './store/kanban/kanban.effects';
+import { KeycloakService } from 'keycloak-angular';
+
+const scrollConfig: InMemoryScrollingOptions = {
+  scrollPositionRestoration: 'top',
+  anchorScrolling: 'enabled',
+};
+
+const inMemoryScrollingFeatures: InMemoryScrollingFeature = withInMemoryScrolling(scrollConfig);
+
+export function initializeKeycloak(keycloak: KeycloakService) {
+  return () =>
+    keycloak.init({
+      config: {
+        url: 'http://localhost:8080', // Keycloak 26.1.2 base URL (no /auth)
+        realm: 'your-realm', // Replace with your realm
+        clientId: 'your-client-id', // Replace with your client ID
+      },
+      initOptions: {
+        onLoad: 'check-sso',
+        silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html',
+        checkLoginIframe: false, // Disable iframe check to avoid timeout issues
+      },
+    }).then(authenticated => {
+      console.log('Keycloak initialized, authenticated:', authenticated);
+      return authenticated;
+    }).catch(error => {
+      console.error('Keycloak initialization failed:', error);
+      throw error;
+    });
+}
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    // FakeBackendProvider, // Comment out if interfering
+    DatePipe,
+    DecimalPipe,
+    KeycloakService,
+    provideZoneChangeDetection({
+      eventCoalescing: false,
+      runCoalescing: false,
+      ignoreChangesOutsideZone: true,
+    }),
+    provideRouter(routes, inMemoryScrollingFeatures),
+    provideStore(rootReducer),
+    provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),
+    provideEffects(CalendarEffects, AuthenticationEffects, KanbanEffects),
+    provideHttpClient(withFetch(), withInterceptorsFromDi()),
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeKeycloak,
+      multi: true,
+      deps: [KeycloakService],
+    },
+  ],
+};

@@ -1,0 +1,47 @@
+<div class="workflow-designer">
+  <h2>Workflow Designer</h2>
+  <div class="toolbox">
+    <h4>Drag Elements</h4>
+    <div class="element upload" (dragstart)="onDragStart($event, 'upload')" draggable="true">Upload</div>
+    <div class="element ocr" (dragstart)="onDragStart($event, 'ocr')" draggable="true">OCR</div>
+    <div class="element classification" (dragstart)="onDragStart($event, 'classification')" draggable="true">Classification</div>
+    <div class="element custom" (dragstart)="onDragStart($event, 'custom')" draggable="true">Custom Step</div>
+    <button (click)="openEditModal()" [disabled]="!selectedElement">Edit</button>
+    <button (click)="deleteElement()" [disabled]="!selectedElement">Delete</button>
+    <button (click)="enableAssignMode()">Add Arrow</button>
+    <button (click)="navigateToPage()" [disabled]="!selectedElement">Go to Page</button>
+  </div>
+  <div #paperContainer class="paper-container" (drop)="onDrop($event)" (dragover)="onDragOver($event)"></div>
+
+  <ng-template #editElementModal let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title">Edit Element</h4>
+      <button type="button" class="close" (click)="modal.dismiss('Cross click')">×</button>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="elementForm" (ngSubmit)="saveElement()">
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input id="name" formControlName="name" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+      </form>
+    </div>
+  </ng-template>
+
+  <ng-template #addCustomStepModal let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title">Add Custom Step</h4>
+      <button type="button" class="close" (click)="modal.dismiss('Cross click')">×</button>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="customStepForm" (ngSubmit)="addCustomStep()">
+        <div class="form-group">
+          <label for="customName">Step Name</label>
+          <input id="customName" formControlName="name" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary">Add</button>
+      </form>
+    </div>
+  </ng-template>
+</div>

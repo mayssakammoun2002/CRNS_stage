@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../node_modules/listree/dist/listree.esm.min.js"],
+  "sourcesContent": ["function e() {\n  const e = document.getElementsByClassName(\"listree-submenu-heading\");\n  Array.from(e).forEach(function (e) {\n    e.classList.add(\"collapsed\"), e.nextElementSibling.style.display = \"none\", e.addEventListener(\"click\", function (s) {\n      s.preventDefault();\n      const t = s.target.nextElementSibling;\n      \"none\" == t.style.display ? (e.classList.remove(\"collapsed\"), e.classList.add(\"expanded\"), t.style.display = \"block\") : (e.classList.remove(\"expanded\"), e.classList.add(\"collapsed\"), t.style.display = \"none\"), s.stopPropagation();\n    });\n  });\n}\nexport default e;"],
+  "mappings": ";;;AAAA,SAAS,IAAI;AACX,QAAMA,KAAI,SAAS,uBAAuB,yBAAyB;AACnE,QAAM,KAAKA,EAAC,EAAE,QAAQ,SAAUA,IAAG;AACjC,IAAAA,GAAE,UAAU,IAAI,WAAW,GAAGA,GAAE,mBAAmB,MAAM,UAAU,QAAQA,GAAE,iBAAiB,SAAS,SAAU,GAAG;AAClH,QAAE,eAAe;AACjB,YAAM,IAAI,EAAE,OAAO;AACnB,gBAAU,EAAE,MAAM,WAAWA,GAAE,UAAU,OAAO,WAAW,GAAGA,GAAE,UAAU,IAAI,UAAU,GAAG,EAAE,MAAM,UAAU,YAAYA,GAAE,UAAU,OAAO,UAAU,GAAGA,GAAE,UAAU,IAAI,WAAW,GAAG,EAAE,MAAM,UAAU,SAAS,EAAE,gBAAgB;AAAA,IACtO,CAAC;AAAA,EACH,CAAC;AACH;AACA,IAAO,0BAAQ;",
+  "names": ["e"]
+}

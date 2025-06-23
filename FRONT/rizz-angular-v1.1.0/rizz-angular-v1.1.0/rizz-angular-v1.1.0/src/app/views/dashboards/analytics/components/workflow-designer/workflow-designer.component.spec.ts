@@ -1,0 +1,131 @@
+import { Component, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
+import * as joint from 'jointjs';
+import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+
+@Component({
+  selector: 'app-workflow-designer',
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: './workflow-designer.component.html',
+  styleUrls: ['./workflow-designer.component.css']
+})
+export class WorkflowDesignerComponent implements AfterViewInit {
+  @ViewChild('paperContainer', { static: false }) paperContainer!: ElementRef<HTMLDivElement>;
+  private graph!: joint.dia.Graph;
+  private paper!: joint.dia.Paper;
+  private lastElement: joint.dia.Element | null = null;
+
+  constructor(private router: Router) {}
+
+  ngAfterViewInit(): void {
+    this.initializeJointJSPaper();
+  }
+
+  private initializeJointJSPaper(): void {
+    this.graph = new joint.dia.Graph();
+    this.paper = new joint.dia.Paper({
+      el: this.paperContainer.nativeElement,
+      model: this.graph,
+      width: '100%',
+      height: 600,
+      gridSize: 10,
+      drawGrid: true,
+      background: { color: '#f8f9fa' },
+      interactive: true,
+      linkPinning: false,
+      defaultLink: new joint.shapes.standard.Link({
+        attrs: {
+          line: { stroke: '#333', strokeWidth: 2, targetMarker: { type: 'path', d: 'M 10 -5 0 0 10 5 z' } }
+        }
+      }),
+      validateConnection: (cellViewS: joint.dia.CellView, magnetS: SVGElement, cellViewT: joint.dia.CellView, magnetT: SVGElement) => {
+        const sourceCell = (cellViewS as any).model as joint.dia.Cell;
+        const targetCell = (cellViewT as any)?.model as joint.dia.Cell;
+        return targetCell instanceof joint.dia.Element && sourceCell !== targetCell;
+      }
+    });
+
+    this.paper.on('element:pointerclick', (elementView: joint.dia.ElementView) => {
+      const element = (elementView as any).model as joint.dia.Element;
+      const stepName = element.attr('label/text');
+      this.navigateToPage(stepName);
+    });
+
+    this.paper.on('element:contextmenu', (elementView: joint.dia.ElementView) => {
+      if (this.lastElement && this.lastElement !== (elementView as any).model) {
+        this.connectSteps(this.lastElement, (elementView as any).model as joint.dia.Element);
+      }
+      this.lastElement = (elementView as any).model as joint.dia.Element;
+    });
+
+    this.paper.on('element:button:click', (elementView: joint.dia.ElementView) => {
+      const element = (elementView as any).model as joint.dia.Element;
+      const stepName = element.attr('label/text');
+      this.navigateToPage(stepName);
+    });
+  }
+
+  onDragStart(event: DragEvent, name: string): void {
+    event.dataTransfer?.setData('text/plain', name);
+  }
+
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    const name = event.dataTransfer?.getData('text/plain');
+    const point = this.paper.clientToLocalPoint({ x: event.clientX, y: event.clientY });
+    if (name) {
+      const newElement = this.addCard(name, point.x, point.y);
+      if (this.lastElement) {
+        this.connectSteps(this.lastElement, newElement);
+      }
+      this.lastElement = newElement;
+    }
+  }
+
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+  }
+
+  addCard(name: string, x: number, y: number): joint.dia.Element {
+    const card = new joint.shapes.standard.Rectangle({
+      position: { x, y },
+      size: { width: 150, height: 100 },
+      attrs: {
+        body: { fill: '#ffffff', stroke: '#333', strokeWidth: 2, rx: 5, ry: 5 },
+        label: { text: name, fill: '#333', fontSize: 14, fontWeight: 'bold' },
+        button: {
+          text: 'Go',
+          x: 110,
+          y: 70,
+          fill: '#28a745',
+          cursor: 'pointer',
+          event: 'element:button:click'
+        }
+      }
+    });
+    this.graph.addCell(card);
+    return card;
+  }
+
+  connectSteps(source: joint.dia.Element, target: joint.dia.Element): void {
+    const link = new joint.shapes.standard.Link({
+      source: { id: source.id },
+      target: { id: target.id },
+      attrs: {
+        line: { stroke: '#333', strokeWidth: 2, targetMarker: { type: 'path', d: 'M 10 -5 0 0 10 5 z' } }
+      }
+    });
+    this.graph.addCell(link);
+  }
+
+  navigateToPage(stepName: string): void {
+    const routes: { [key: string]: string } = {
+      'Upload': '/upload',
+      'Classification': '/classification',
+      'OCR': '/ocr'
+    };
+    const route = routes[stepName] || '/';
+    this.router.navigate([route]);
+  }
+}

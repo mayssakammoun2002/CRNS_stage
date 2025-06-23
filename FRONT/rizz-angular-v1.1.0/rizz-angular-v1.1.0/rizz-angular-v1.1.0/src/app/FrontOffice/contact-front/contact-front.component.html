@@ -1,0 +1,68 @@
+<main id="top">
+  <section class="hero-section hero-50 d-flex justify-content-center align-items-center">
+    <div class="section-overlay"></div>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-6 col-12 mb-5 mb-lg-0">
+          <div class="hero-content">
+            <h4 class="text-white mb-4">
+              <i class="bi-heart me-2"></i>
+              We'd love to hear from you
+            </h4>
+            <h1 class="hero-title text-white mb-4">Contact Form</h1>
+            <ul class="breadcrumb">
+              <li class="breadcrumb-item"><a routerLink="/">Homepage</a></li>
+              <li class="breadcrumb-item active">Contact Form</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="contact-section section-padding">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-6 col-12">
+          <form class="custom-form contact-form bg-white shadow-lg" role="form">
+            <h2 class="mb-4 pb-2">Send a message</h2>
+            <div class="row">
+              <div class="col-lg-6 col-md-6 col-12">
+                <div class="form-floating">
+                  <input type="text" name="full-name" id="full-name" class="form-control" placeholder="Name" required="">
+                  <label for="full-name">Name</label>
+                </div>
+              </div>
+              <div class="col-lg-6 col-md-6 col-12">
+                <div class="form-floating">
+                  <input type="email" name="email" id="email" pattern="[^ @]*@[^ @]*" class="form-control" placeholder="Email address" required="">
+                  <label for="email">Email address</label>
+                </div>
+              </div>
+              <div class="col-lg-12 col-12">
+                <div class="form-floating">
+                  <input type="text" name="subject" id="subject" class="form-control" placeholder="Subject">
+                  <label for="subject">Subject</label>
+                </div>
+                <div class="form-floating">
+                  <textarea class="form-control" id="message" name="message" placeholder="Tell me about the project"></textarea>
+                  <label for="message">Tell me about the project</label>
+                </div>
+              </div>
+              <div class="col-lg-12 col-12">
+                <button type="submit" class="btn custom-btn">Submit</button>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="col-lg-5 col-12 mx-auto mt-5 mt-lg-0">
+          <h2 class="mb-4">Topic Listing Center</h2>
+          <p>
+            <i class="bi-geo-alt me-2"></i>
+            Bay St & Larkin St, San Francisco, CA 94109, United States
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
